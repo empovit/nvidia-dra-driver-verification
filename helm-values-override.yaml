@@ -1,0 +1,19 @@
+# Fix pod security warning on OpenShift
+kubeletPlugin:
+  containers:
+    init:
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+    computeDomains:
+      securityContext:
+        privileged: true
+        seccompProfile:
+          type: Unconfined
+    gpus:
+      securityContext:
+        privileged: true
+        seccompProfile:
+          type: Unconfined
