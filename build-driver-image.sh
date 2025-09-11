@@ -3,6 +3,11 @@
 set -e
 set -x
 
+if ! go version; then
+    echo "Go installation required"
+    exit 1
+fi
+
 if [ -n "${DOCKER:-}" ] && [ "${DOCKER}" != "docker" ]; then
     echo "This script only works with Docker"
     exit 1
