@@ -4,7 +4,9 @@ set -e
 set -o pipefail
 set -o nounset
 
-echo "${BUNDLE_IMAGE}"
+"$(dirname "$0")/download-operator-sdk.sh"
+
+echo "Bundle image: ${BUNDLE_IMAGE}"
 export GPU_OPERATOR_NAMESPACE="nvidia-gpu-operator"
 
 # Create namespace with pod-security label using oc apply
@@ -17,5 +19,6 @@ metadata:
   labels:
     pod-security.kubernetes.io/enforce: privileged
 EOF
+
 
 "$(dirname "$0")/operator-sdk" run bundle --timeout=10m -n $GPU_OPERATOR_NAMESPACE --install-mode OwnNamespace ${BUNDLE_IMAGE}
