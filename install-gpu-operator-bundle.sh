@@ -4,6 +4,11 @@ set -e
 set -o pipefail
 set -o nounset
 
+echo "Work around stale operator image when re-installing a bundle"
+for node in $(oc get nodes -o name); do
+  oc debug $node -- chroot /host crictl rmi ghcr.io/nvidia/gpu-operator:main-latest || true
+done
+
 "$(dirname "$0")/download-operator-sdk.sh"
 
 echo "Bundle image: ${BUNDLE_IMAGE}"
