@@ -10,7 +10,7 @@ oc apply -f nfd-operator-resources.yaml
 sleep 15
 
 timeout 120s bash -c "until oc get csv -n ${NFD_OPERATOR_NAMESPACE} -o name; do sleep 10; done"
-CSV_NAME=$(oc get csv -n ${NFD_OPERATOR_NAMESPACE} -o name)
+CSV_NAME=$(oc get csv -n ${NFD_OPERATOR_NAMESPACE} -o name -l operators.coreos.com/nfd.openshift-nfd)
 oc wait --for=jsonpath='{.status.reason}'=InstallSucceeded --timeout=360s -n ${NFD_OPERATOR_NAMESPACE} ${CSV_NAME}
 
 timeout 60s bash -c "until oc get deployment nfd-controller-manager -n ${NFD_OPERATOR_NAMESPACE} -o name; do sleep 10; done"
