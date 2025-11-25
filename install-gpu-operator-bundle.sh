@@ -6,6 +6,8 @@ set -o nounset
 
 echo "Work around stale operator image when re-installing a bundle"
 for node in $(oc get nodes -o name); do
+  # The default bundle always points to the same GPU operator image, so just updating the
+  # bundle image is not enough to update the operator.
   oc debug $node -- chroot /host crictl rmi ghcr.io/nvidia/gpu-operator:main-latest || true
 done
 
