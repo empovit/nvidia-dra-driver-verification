@@ -6,20 +6,32 @@ This repository provides scripts and tools for verifying the [NVIDIA DRA (Dynami
 
 - OpenShift 4.20 cluster with GPU nodes
 - Cluster administrator privileges (`cluster-admin` role)
-- `oc` or `kubectl` CLI tools
+- `oc` CLI tool
 - Helm 3.x (for DRA driver installation)
+
+## Installation Overview
+
+1. Enable DRA as it is disabled by default in OpenShift 4.20:
+   * Enable `TechPreviewNoUpgrade` feature set
+   * Enable `HighNodeUtilization` scheduler profile
+2. Install the NVIDIA GPU operator for NVIDIA drivers and GPU allocation:
+   * Install the Node Feature Discovery (NFD) operator and create a `NodeFeatureDiscovery` CR.
+   * Install the NVIDIA GPU Operator and create a `ClusterPolicy` CR.
+3. Install the NVIDIA DRA driver for DRA features.
+4. Apply additional Security Context Constraints (SCC) to work around security-related errors on OpenShift. This will be fixed later in the DRA driver's Helm chart.
 
 ## Setup Instructions
 
 Follow these steps in order to get the NVIDIA DRA driver up and running in your cluster:
 
-### 1. Enable DRA Feature Gate (Required)
+### 1. Enable DRA
 
-Enable the Dynamic Resource Allocation feature gate on your cluster:
+Enable the Dynamic Resource Allocation feature gate as part of the `TechPreviewNoUpgrade` feature set on your cluster:
 
 ```bash
 oc apply -f feature-gate-dra.yaml
 ```
+**Warning**: Enabling the `TechPreviewNoUpgrade` feature set is not reversible, and will prevent future upgrades on the cluster. Not to be done on production clusters!
 
 **Note:** This requires cluster restart and may take several minutes to propagate.
 
@@ -29,25 +41,22 @@ After the cluster restart, verify that the DRA API is available:
 oc api-resources --api-group='resource.k8s.io'
 ```
 
-### 2. Configure Scheduler Profile (Required)
-
 After enabling the DRA feature gate, you must configure the correct scheduler profile:
 
 ```bash
 ./enable-dra-profile.sh
 ```
 
-### 3. Install Node Feature Discovery (NFD) Operator
+### 2. Install the NVIDIA GPU Operator
 
-NFD is required for GPU node detection and labeling:
+
+First, install the Node Feature Discovery (NFD) Operator:
 
 ```bash
 ./install-nfd-operator.sh
 ```
 
-### 4. Install NVIDIA GPU Operator
-
-Choose **one** of the following installation methods:
+Then install the NVIDIA GPU Operator. Choose **one** of the following installation methods:
 
 #### Option A: Using OLM (Operator Lifecycle Manager)
 
@@ -69,7 +78,7 @@ export BUNDLE_IMAGE="ghcr.io/nvidia/gpu-operator/gpu-operator-bundle:main-latest
 
 **Note:** The `BUNDLE_IMAGE` environment variable is required for bundle installation.
 
-### 5. Install NVIDIA DRA Driver
+### 3. Install the NVIDIA DRA Driver
 
 Choose **one** of the following installation methods:
 
@@ -97,7 +106,7 @@ export TAG="your-tag"
 ./install-dra-driver-from-local.sh
 ```
 
-### 6. Apply OpenShift Role Bindings (Required for OpenShift)
+### 4. Apply OpenShift Role Bindings
 
 After installing the NVIDIA DRA driver, apply the required OpenShift Security Context Constraints (SCC) role bindings:
 
@@ -122,7 +131,7 @@ oc get resourceclass
 
 ## IMEX Multi-Node Tests
 
-The `imex-test-jobs/` directory contains validation tests for multi-node NVLink communication using NVIDIA IMEX channels.
+The [`imex-test-jobs`](imex-test-jobs/) directory contains validation tests for multi-node NVLink communication using NVIDIA IMEX channels.
 
 ## Documentation Links
 
