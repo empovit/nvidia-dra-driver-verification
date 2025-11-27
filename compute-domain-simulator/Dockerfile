@@ -47,12 +47,10 @@ RUN GOARCH=${TARGETARCH} CGO_ENABLED=0 go build \
     nvidia-imex-ctl-simulator.go
 
 # Create wrapper script for compute-domain-daemon
-RUN cat > /artifacts/compute-domain-daemon-wrapper.sh << 'EOF'
-#!/bin/sh
-# Wrapper script that ensures nvidia-imex binaries are in PATH
-export PATH=/usr/local/bin:$PATH
-exec /usr/bin/compute-domain-daemon.real "$@"
-EOF
+RUN echo '#!/bin/sh' > /artifacts/compute-domain-daemon-wrapper.sh && \
+    echo '# Wrapper script that ensures nvidia-imex binaries are in PATH' >> /artifacts/compute-domain-daemon-wrapper.sh && \
+    echo 'export PATH=/usr/local/bin:$PATH' >> /artifacts/compute-domain-daemon-wrapper.sh && \
+    echo 'exec /usr/bin/compute-domain-daemon.real "$@"' >> /artifacts/compute-domain-daemon-wrapper.sh
 
 RUN chmod +x /artifacts/compute-domain-daemon-wrapper.sh
 
