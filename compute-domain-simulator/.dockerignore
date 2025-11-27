@@ -1,0 +1,39 @@
+# Docker build ignore file
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+SUMMARY.md
+*.md
+
+# Example files (not needed in image)
+example-*.cfg
+example-*.yaml
+
+# Test files
+test-*.sh
+quickstart.sh
+
+# Build artifacts
+*.log
+tmp/
+temp/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Kubernetes manifests (not needed in image)
+*.yaml
+*.yml
+
+# Makefiles (not needed in image)
+Makefile
+

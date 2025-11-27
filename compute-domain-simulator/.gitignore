@@ -1,0 +1,39 @@
+# Ignore build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+
+# Ignore test binaries
+test-*
+*.test
+
+# Ignore Go build cache
+go.sum
+
+# Ignore editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Ignore container artifacts
+*.tar
+*.tar.gz
+
+# Ignore temporary files
+tmp/
+temp/
+.tmp/
+
+# Ignore log files
+*.log
+
+# Ignore generated binaries (we build them in container)
+nvidia-imex
+nvidia-imex-ctl
+
+k8s-dra-driver
