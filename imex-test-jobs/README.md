@@ -32,7 +32,7 @@ A **Clique ID** is a unique identifier that defines which GPUs are physically ca
 
 ```bash
 # Verify all nodes have the same clique ID
-oc get nodes -o custom-columns=NAME:.metadata.name,CLIQUE:.metadata.labels.nvidia\.com/gpu\.clique
+oc get nodes -o custom-columns=NAME:".metadata.name",CLIQUE:".metadata.labels.nvidia\.com/gpu\.clique"
 ```
 
 ### 5. NVIDIA DRA Driver
