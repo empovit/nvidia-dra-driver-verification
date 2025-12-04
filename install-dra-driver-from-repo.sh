@@ -7,8 +7,11 @@ DRA_DRIVER_VERSION=${DRA_DRIVER_VERSION:-"25.8.0"}
 FORCE_GPU_SUPPORT=${FORCE_GPU_SUPPORT:-false}
 FORCE_GPU_SUPPORT_OPTIONS=""
 if [ "$FORCE_GPU_SUPPORT" = true ]; then
-    FORCE_GPU_SUPPORT_OPTIONS="--set resources.gpus.enabled=false --set gpuResourcesEnabledOverride=true"
+    FORCE_GPU_SUPPORT_OPTIONS="--set resources.gpus.enabled=true --set gpuResourcesEnabledOverride=true"
+else
+    FORCE_GPU_SUPPORT_OPTIONS="--set resources.gpus.enabled=false"
 fi
+
 
 helm repo add nvidia https://helm.ngc.nvidia.com/nvidia \
     && helm repo update
