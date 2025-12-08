@@ -4,14 +4,23 @@ set -e
 set -x
 set -o nounset
 
+# Validate required variables
+if [ -z "${DRA_DRIVER_DIR:-}" ]; then
+    echo "Error: DRA_DRIVER_DIR is required (path to k8s-dra-driver repository)"
+    exit 1
+fi
+
+# Set defaults from Helm chart configuration
+REGISTRY=${REGISTRY:-"nvcr.io/nvidia"}
+TAG=${TAG:-"v25.8.0"}
+IMAGE=${IMAGE:-"k8s-dra-driver-gpu"}
 FORCE_GPU_SUPPORT=${FORCE_GPU_SUPPORT:-false}
 
 echo "DRA driver directory: ${DRA_DRIVER_DIR}"
 echo "Image tag: ${TAG}"
 echo "Image registry: ${REGISTRY}"
+echo "Image name: ${IMAGE}"
 echo "Force GPU support: ${FORCE_GPU_SUPPORT}"
-
-IMAGE="${IMAGE:-k8s-dra-driver-gpu}"
 FORCE_GPU_SUPPORT_OPTIONS=""
 if [ "$FORCE_GPU_SUPPORT" = true ]; then
     FORCE_GPU_SUPPORT_OPTIONS="--set resources.gpus.enabled=false --set gpuResourcesEnabledOverride=true"
