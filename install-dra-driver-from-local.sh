@@ -36,5 +36,4 @@ helm install nvidia-dra-driver-gpu ${DRA_DRIVER_DIR}/deployments/helm/nvidia-dra
     --set nvidiaDriverRoot=/run/nvidia/driver \
     ${FORCE_GPU_SUPPORT_OPTIONS} \
     --set image.tag=${TAG} \
-    --set image.repository=${REGISTRY}/${IMAGE} \
-    --set controller.affinity=null
+    --set image.repository=${REGISTRY}/${IMAGE}

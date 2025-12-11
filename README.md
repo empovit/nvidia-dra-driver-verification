@@ -115,7 +115,8 @@ oc apply -f kubelet-plugin-privileged-role-binging.yaml
 oc apply -f compute-domain-daemon-anyuid-role-binding.yaml
 ```
 
-**Note:** These role bindings are currently required for the DRA driver to function properly on OpenShift. This requirement may be addressed in future versions of the NVIDIA DRA Driver Helm chart.
+**Note:** These role bindings are currently required for the DRA driver to function properly on OpenShift. This requirement in
+[PR #569](https://github.com/NVIDIA/k8s-dra-driver-gpu/pull/569) of the NVIDIA DRA Driver.
 
 ## Verification
 
