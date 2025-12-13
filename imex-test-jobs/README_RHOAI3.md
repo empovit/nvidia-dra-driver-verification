@@ -11,14 +11,14 @@
 ### HOWTO
 
 ```bash
-git clone https://github.com/mnmehta/nvidia-dra-driver-verification.git
+git clone https://github.com/empovit/nvidia-dra-driver-verification.git
 cd nvidia-dra-driver-verification/imex-test-jobs/
 
 oc delete project imex-multi-node-gpu-test
 oc apply -f nvbandwidth-3nodes-4gpus.yaml 
 
 # Wait for the job to finish
-oc logs -f nvbandwidth-test-launcher | tail -n 20
+oc logs -f -n imex-multi-node-gpu-test nvbandwidth-test-launcher
 ```
 
 Example tail output:
