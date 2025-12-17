@@ -89,7 +89,7 @@ Choose **one** of the following installation methods:
 ./install-dra-driver-from-repo.sh
 
 # Or use a specific version
-export DRA_DRIVER_VERSION="25.8.0"
+export DRA_DRIVER_VERSION="25.8.1"
 ./install-dra-driver-from-repo.sh
 ```
 

@@ -12,7 +12,7 @@ fi
 
 # Set defaults from Helm chart configuration
 REGISTRY=${REGISTRY:-"nvcr.io/nvidia"}
-TAG=${TAG:-"v25.8.0"}
+TAG=${TAG:-"v25.8.1"}
 IMAGE=${IMAGE:-"k8s-dra-driver-gpu"}
 FORCE_GPU_SUPPORT=${FORCE_GPU_SUPPORT:-false}
 
