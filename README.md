@@ -17,8 +17,7 @@ This repository provides scripts and tools for verifying the [NVIDIA DRA (Dynami
 2. Install the NVIDIA GPU operator for NVIDIA drivers and GPU allocation:
    * Install the Node Feature Discovery (NFD) operator and create a `NodeFeatureDiscovery` CR.
    * Install the NVIDIA GPU Operator and create a `ClusterPolicy` CR.
-3. Install the NVIDIA DRA driver for DRA features.
-4. Apply additional Security Context Constraints (SCC) to work around security-related errors on OpenShift. This will be fixed later in the DRA driver's Helm chart.
+3. Install the NVIDIA DRA driver (version 25.8.1 or later) for DRA features.
 
 ## Setup Instructions
 
@@ -88,7 +87,7 @@ Choose **one** of the following installation methods:
 # Use default version
 ./install-dra-driver-from-repo.sh
 
-# Or use a specific version
+# Or explicitly specify a version
 export DRA_DRIVER_VERSION="25.8.1"
 ./install-dra-driver-from-repo.sh
 ```
@@ -105,18 +104,6 @@ export TAG="your-tag"
 # Then install from local image
 ./install-dra-driver-from-local.sh
 ```
-
-### 4. Apply OpenShift Role Bindings
-
-After installing the NVIDIA DRA driver, apply the required OpenShift Security Context Constraints (SCC) role bindings:
-
-```bash
-oc apply -f kubelet-plugin-privileged-role-binging.yaml
-oc apply -f compute-domain-daemon-anyuid-role-binding.yaml
-```
-
-**Note:** These role bindings are currently required for the DRA driver to function properly on OpenShift. This requirement in
-[PR #569](https://github.com/NVIDIA/k8s-dra-driver-gpu/pull/569) of the NVIDIA DRA Driver.
 
 ## Verification
 
