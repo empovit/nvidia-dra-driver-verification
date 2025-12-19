@@ -123,7 +123,8 @@ The [`imex-test-jobs`](imex-test-jobs/) directory contains validation tests for 
 
 ## Documentation Links
 
-- [NVIDIA DRA Driver for GPUs](https://github.com/NVIDIA/k8s-dra-driver-gpu/)
+- [NVIDIA DRA Driver for GPUs Documentation](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/dra-intro-install.html)
+- [NVIDIA DRA Driver for GPUs Repository](https://github.com/NVIDIA/k8s-dra-driver-gpu/)
 - [NVIDIA GPU Operator](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/index.html)
 - [Kubernetes Dynamic Resource Allocation](https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/)
 - [Feature Gates](https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/postinstallation_configuration/post-install-cluster-tasks#nodes-cluster-enabling-features-about_post-install-cluster-tasks)
