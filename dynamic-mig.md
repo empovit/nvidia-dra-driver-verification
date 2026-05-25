@@ -39,7 +39,15 @@ Verify that ResourceSlices expose MIG devices:
 
 ```bash
 oc get resourceslices -o json | \
-  jq '.items[].spec.devices[] | select(.basic.attributes["gpu.nvidia.com/type"].string == "mig")'
+  jq -r '
+    [.items[] | select(.spec.driver=="gpu.nvidia.com") | .spec.devices[]?
+     | select(.attributes.type.string=="mig")]
+    | .[]
+    | [.name,
+       (.attributes.profile.string // "?"),
+       (.attributes.parentUUID.string // "?")]
+    | @tsv' | column -t -s $'\t' \
+    | { echo -e "DEVICE\tPROFILE\tPARENT_GPU"; cat; }
 ```
 
 Verify the node has no `nvidia.com/gpu` capacity (device plugin is disabled):
