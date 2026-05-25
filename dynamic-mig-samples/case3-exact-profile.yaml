@@ -22,33 +22,41 @@ roleRef:
   kind: ClusterRole
   name: system:openshift:scc:anyuid
 ---
-apiVersion: resource.k8s.io/v1beta1
+# Profile names match nvidia-smi output and vary by GPU model, e.g.:
+#   H100 SXM 80GB: 1g.10gb, 2g.20gb, 3g.40gb, 4g.40gb, 7g.80gb
+#   H200 SXM 141GB: 1g.18gb, 2g.35gb, 3g.53gb, 4g.71gb, 7g.141gb
+# Check available profiles on your cluster:
+#   oc get resourceslices -o json | \
+#     jq -r '[.items[] | select(.spec.driver=="gpu.nvidia.com") | .spec.devices[]?
+#             | select(.attributes.type.string=="mig") | .attributes.profile.string] | unique[]'
+apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
-  name: mig-1g-10gb
+  name: mig-claim-profile
   namespace: dynamic-mig-jobs
 spec:
   spec:
     devices:
       requests:
       - name: mig
-        deviceClassName: mig.nvidia.com
-        selectors:
-        - cel:
-            expression: 'device.attributes["gpu.nvidia.com/mig-profile"].string == "1g.10gb"'
+        exactly:
+          deviceClassName: mig.nvidia.com
+          selectors:
+          - cel:
+              expression: "device.attributes['gpu.nvidia.com'].profile == '1g.10gb'"
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: mig-test-pod
+  name: mig-profile
   namespace: dynamic-mig-jobs
 spec:
   restartPolicy: Never
   serviceAccountName: mig-test-service-account
   containers:
-  - name: mig-test
-    image: nvcr.io/nvidia/cuda:12.4.0-base-ubi9
-    command: ["nvidia-smi"]
+  - name: ctr
+    image: ubuntu:24.04
+    command: ["nvidia-smi", "-L"]
     securityContext:
       runAsUser: 1000
     resources:
@@ -56,4 +64,4 @@ spec:
       - name: migdev
   resourceClaims:
   - name: migdev
-    resourceClaimTemplateName: mig-1g-10gb
+    resourceClaimTemplateName: mig-claim-profile

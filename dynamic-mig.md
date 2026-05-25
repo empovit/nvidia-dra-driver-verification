@@ -65,21 +65,31 @@ oc debug node/<gpu-node-name> -- nvidia-smi --query-gpu=mig.mode.current --forma
 
 ## 5. Run a Dynamic MIG Workload
 
-The [`dynamic-mig-jobs/`](dynamic-mig-jobs/) directory contains sample workloads. Apply the minimal workload:
+The [`dynamic-mig-samples/`](dynamic-mig-samples/) directory contains sample workloads for different use cases:
+
+| File | Description |
+|---|---|
+| `case1-any-mig.yaml` | Any MIG slice — scheduler picks freely |
+| `case2-capacity-constraints.yaml` | Slice with memory/compute lower bounds (recommended) |
+| `case3-exact-profile.yaml` | Exact profile name (e.g. `1g.10gb`) |
+| `case4-multiple-slices.yaml` | Multiple slices in one pod, each assigned to a different container |
+| `case5-same-gpu.yaml` | Multiple slices pinned to the same parent GPU |
+
+Apply a workload, for example:
 
 ```bash
-oc apply -f dynamic-mig-jobs/mig-workload.yaml
+oc apply -f dynamic-mig-samples/case1-any-mig.yaml
 ```
 
-The workload requests a `1g.10gb` MIG slice. Once scheduled, the DRA driver automatically enables MIG mode on the GPU and creates the requested slice. Once the pod completes, inspect the logs to confirm the MIG device was visible:
+Once scheduled, the DRA driver automatically enables MIG mode on the GPU and creates the requested slice. Once the pod completes, inspect the logs to confirm the MIG device was visible:
 
 ```bash
-oc logs mig-test-pod -n dynamic-mig-jobs
+oc logs -n dynamic-mig-jobs mig-any
 ```
 
 After deleting the workload, the DRA driver tears down the MIG slice:
 
 ```bash
-oc delete -f dynamic-mig-jobs/mig-workload.yaml
+oc delete -f dynamic-mig-samples/case1-any-mig.yaml
 ```
 
