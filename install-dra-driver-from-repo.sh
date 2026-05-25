@@ -3,24 +3,20 @@
 set -e
 set -x
 
-DRA_DRIVER_VERSION=${DRA_DRIVER_VERSION:-"25.8.1"}
-FORCE_GPU_SUPPORT=${FORCE_GPU_SUPPORT:-false}
-FORCE_GPU_SUPPORT_OPTIONS=""
-if [ "$FORCE_GPU_SUPPORT" = true ]; then
-    FORCE_GPU_SUPPORT_OPTIONS="--set resources.gpus.enabled=true --set gpuResourcesEnabledOverride=true"
+DRA_DRIVER_VERSION=${DRA_DRIVER_VERSION:-"0.4.0"}
+
+GPU_HELM_OPTIONS=""
+if [ "${DYNAMIC_MIG:-false}" = true ] || [ "${FORCE_GPU_SUPPORT:-false}" = true ]; then
+    GPU_HELM_OPTIONS="--set resources.gpus.enabled=true --set gpuResourcesEnabledOverride=true"
 else
-    FORCE_GPU_SUPPORT_OPTIONS="--set resources.gpus.enabled=false"
+    GPU_HELM_OPTIONS="--set resources.gpus.enabled=false"
 fi
 
-
-helm repo add nvidia https://helm.ngc.nvidia.com/nvidia \
-    && helm repo update
-
-# To use the latest version, remove the --version line
-helm install nvidia-dra-driver-gpu nvidia/nvidia-dra-driver-gpu \
+helm install dra-driver-nvidia-gpu \
+    oci://registry.k8s.io/dra-driver-nvidia/charts/dra-driver-nvidia-gpu \
     --version="${DRA_DRIVER_VERSION}" \
     --create-namespace \
-    --namespace nvidia-dra-driver-gpu \
+    --namespace dra-driver-nvidia-gpu \
     --set nvidiaDriverRoot=/run/nvidia/driver \
     --set featureGates.DynamicMIG="${DYNAMIC_MIG:-false}" \
-    ${FORCE_GPU_SUPPORT_OPTIONS}
+    ${GPU_HELM_OPTIONS}

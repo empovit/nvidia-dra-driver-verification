@@ -2,4 +2,4 @@
 
 set -ex
 
-helm uninstall --namespace nvidia-dra-driver-gpu nvidia-dra-driver-gpu
+helm uninstall --namespace dra-driver-nvidia-gpu dra-driver-nvidia-gpu

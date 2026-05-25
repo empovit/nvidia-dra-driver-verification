@@ -1,53 +1,32 @@
 # NVIDIA DRA Driver Verification
 
-This repository provides scripts and tools for verifying the [NVIDIA DRA (Dynamic Resource Allocation) Driver for GPUs](https://github.com/NVIDIA/k8s-dra-driver-gpu/) on OpenShift.
+This repository provides scripts and tools for verifying the [DRA Driver for NVIDIA GPUs](https://github.com/kubernetes-sigs/dra-driver-nvidia-gpu/) on OpenShift.
 
 ## Prerequisites
 
-- OpenShift 4.20 cluster with GPU nodes
+- OpenShift 4.21+ cluster with GPU nodes
 - Cluster administrator privileges (`cluster-admin` role)
 - `oc` CLI tool
 - Helm 3.x (for DRA driver installation)
 
-## Installation Overview
-
-1. Enable DRA as it is disabled by default in OpenShift 4.20:
-   * Enable `TechPreviewNoUpgrade` feature set
-   * Enable `HighNodeUtilization` scheduler profile
-2. Install the NVIDIA GPU operator for NVIDIA drivers and GPU allocation:
-   * Install the Node Feature Discovery (NFD) operator and create a `NodeFeatureDiscovery` CR.
-   * Install the NVIDIA GPU Operator and create a `ClusterPolicy` CR.
-3. Install the NVIDIA DRA driver (version 25.8.1 or later) for DRA features.
-
-## Setup Instructions
-
-Follow these steps in order to get the NVIDIA DRA driver up and running in your cluster:
-
-### 1. Enable DRA
-
-Enable the Dynamic Resource Allocation feature gate as part of the `TechPreviewNoUpgrade` feature set on your cluster:
-
-```bash
-oc apply -f feature-gate-dra.yaml
-```
-**Warning**: Enabling the `TechPreviewNoUpgrade` feature set is not reversible, and will prevent future upgrades on the cluster. Not to be done on production clusters!
-
-**Note:** This requires cluster restart and may take several minutes to propagate.
-
-After the cluster restart, verify that the DRA API is available:
+Verify that the DRA API is available on your cluster:
 
 ```bash
 oc api-resources --api-group='resource.k8s.io'
 ```
 
-After enabling the DRA feature gate, you must configure the correct scheduler profile:
+## Installation Overview
 
-```bash
-./enable-dra-profile.sh
-```
+1. Install the NVIDIA GPU operator for NVIDIA drivers and GPU allocation:
+   * Install the Node Feature Discovery (NFD) operator and create a `NodeFeatureDiscovery` CR.
+   * Install the NVIDIA GPU Operator and create a `ClusterPolicy` CR.
+2. Install the NVIDIA DRA driver (version 0.4.0 or later) for DRA features.
 
-### 2. Install the NVIDIA GPU Operator
+## Setup Instructions
 
+Follow these steps in order to get the NVIDIA DRA driver up and running in your cluster:
+
+### 1. Install the NVIDIA GPU Operator
 
 First, install the Node Feature Discovery (NFD) Operator:
 
@@ -77,18 +56,18 @@ export BUNDLE_IMAGE="ghcr.io/nvidia/gpu-operator/gpu-operator-bundle:main-latest
 
 **Note:** The `BUNDLE_IMAGE` environment variable is required for bundle installation.
 
-### 3. Install the NVIDIA DRA Driver
+### 2. Install the NVIDIA DRA Driver
 
 Choose **one** of the following installation methods:
 
-#### Option A: Install from NVIDIA Helm Repository (Recommended)
+#### Option A: Install from OCI Registry (Recommended)
 
 ```bash
-# Use default version
+# Use default version (0.4.0)
 ./install-dra-driver-from-repo.sh
 
 # Or explicitly specify a version
-export DRA_DRIVER_VERSION="25.8.1"
+export DRA_DRIVER_VERSION="0.4.0"
 ./install-dra-driver-from-repo.sh
 ```
 
@@ -96,7 +75,7 @@ export DRA_DRIVER_VERSION="25.8.1"
 
 ```bash
 # First build the driver image
-export DRA_DRIVER_DIR="/path/to/k8s-dra-driver-gpu"
+export DRA_DRIVER_DIR="/path/to/dra-driver-nvidia-gpu"
 export REGISTRY="your-registry.com/username"
 export TAG="your-tag"
 ./build-dra-driver-image.sh
@@ -111,11 +90,15 @@ After installation, verify that the DRA driver is working:
 
 ```bash
 # Check DRA driver pods
-oc get pods -n nvidia-dra-driver-gpu
+oc get pods -n dra-driver-nvidia-gpu
 
 # Check for available GPU resource classes
 oc get resourceclass
 ```
+
+## Dynamic MIG
+
+See [dynamic-mig.md](dynamic-mig.md) for instructions on setting up and verifying dynamic MIG with the DRA driver.
 
 ## IMEX Multi-Node Tests
 
@@ -123,9 +106,6 @@ The [`imex-test-jobs`](imex-test-jobs/) directory contains validation tests for 
 
 ## Documentation Links
 
-- [NVIDIA DRA Driver for GPUs Documentation](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/dra-intro-install.html)
-- [NVIDIA DRA Driver for GPUs Repository](https://github.com/NVIDIA/k8s-dra-driver-gpu/)
+- [DRA Driver for NVIDIA GPUs Repository](https://github.com/kubernetes-sigs/dra-driver-nvidia-gpu/)
 - [NVIDIA GPU Operator](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/index.html)
 - [Kubernetes Dynamic Resource Allocation](https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/)
-- [Feature Gates](https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/postinstallation_configuration/post-install-cluster-tasks#nodes-cluster-enabling-features-about_post-install-cluster-tasks)
-

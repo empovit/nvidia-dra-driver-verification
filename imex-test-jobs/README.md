@@ -1,6 +1,6 @@
 # NVIDIA DRA Driver for Multi-Node NVLink
 
-This directory contains test jobs for validating the IMEX (Internode Memory Exchange) support in [NVIDIA Dynamic Resource Allocation (DRA) driver](https://github.com/NVIDIA/k8s-dra-driver-gpu/). The test jobs use [nvbandwidth](https://github.com/NVIDIA/nvbandwidth) as a sample distributed workload to illustrate inter-GPU memory access, and validate the high bandwidth of NVLink communication channels.
+This directory contains test jobs for validating the IMEX (Internode Memory Exchange) support in [NVIDIA Dynamic Resource Allocation (DRA) driver](https://github.com/kubernetes-sigs/dra-driver-nvidia-gpu/). The test jobs use [nvbandwidth](https://github.com/NVIDIA/nvbandwidth) as a sample distributed workload to illustrate inter-GPU memory access, and validate the high bandwidth of NVLink communication channels.
 
 ## Prerequisites
 
