@@ -59,7 +59,7 @@ spec:
   containers:
   - name: ctr0
     image: ubuntu:24.04
-    command: ["nvidia-smi", "-L"]
+    command: ["sh", "-c", "nvidia-smi -L && sleep 300"]
     securityContext:
       runAsUser: 1000
     resources:
@@ -68,7 +68,7 @@ spec:
         request: mig-small
   - name: ctr1
     image: ubuntu:24.04
-    command: ["nvidia-smi", "-L"]
+    command: ["sh", "-c", "nvidia-smi -L && sleep 300"]
     securityContext:
       runAsUser: 1000
     resources:

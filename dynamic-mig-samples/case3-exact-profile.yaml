@@ -50,7 +50,7 @@ spec:
   containers:
   - name: ctr
     image: ubuntu:24.04
-    command: ["nvidia-smi", "-L"]
+    command: ["sh", "-c", "nvidia-smi -L && sleep 300"]
     securityContext:
       runAsUser: 1000
     resources:
