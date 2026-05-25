@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: dynamic-mig-jobs
+  name: dynamic-mig-samples
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: mig-test-service-account
-  namespace: dynamic-mig-jobs
+  namespace: dynamic-mig-samples
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -16,7 +16,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: mig-test-service-account
-  namespace: dynamic-mig-jobs
+  namespace: dynamic-mig-samples
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -24,12 +24,11 @@ roleRef:
 ---
 # Multiple MIG slices in one pod: use a single ResourceClaimTemplate with multiple requests.
 # Each container references the shared claim with a specific request name.
-# Profile names below are for H100 SXM 80GB — adjust for your GPU model (see case3 for guidance).
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
   name: mig-claim-multi
-  namespace: dynamic-mig-jobs
+  namespace: dynamic-mig-samples
 spec:
   spec:
     devices:
@@ -39,19 +38,21 @@ spec:
           deviceClassName: mig.nvidia.com
           selectors:
           - cel:
-              expression: "device.attributes['gpu.nvidia.com'].profile == '1g.10gb'"
+              # H100 SXM: 1g.10gb  H200 SXM: 1g.18gb
+              expression: "device.attributes['gpu.nvidia.com'].profile == '1g.18gb'"
       - name: mig-large
         exactly:
           deviceClassName: mig.nvidia.com
           selectors:
           - cel:
-              expression: "device.attributes['gpu.nvidia.com'].profile == '2g.20gb'"
+              # H100 SXM: 2g.20gb  H200 SXM: 2g.35gb
+              expression: "device.attributes['gpu.nvidia.com'].profile == '2g.35gb'"
 ---
 apiVersion: v1
 kind: Pod
 metadata:
   name: mig-multi
-  namespace: dynamic-mig-jobs
+  namespace: dynamic-mig-samples
 spec:
   restartPolicy: Never
   serviceAccountName: mig-test-service-account

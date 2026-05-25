@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: dynamic-mig-jobs
+  name: dynamic-mig-samples
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: mig-test-service-account
-  namespace: dynamic-mig-jobs
+  namespace: dynamic-mig-samples
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -16,24 +16,17 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: mig-test-service-account
-  namespace: dynamic-mig-jobs
+  namespace: dynamic-mig-samples
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: system:openshift:scc:anyuid
 ---
-# Profile names match nvidia-smi output and vary by GPU model, e.g.:
-#   H100 SXM 80GB: 1g.10gb, 2g.20gb, 3g.40gb, 4g.40gb, 7g.80gb
-#   H200 SXM 141GB: 1g.18gb, 2g.35gb, 3g.53gb, 4g.71gb, 7g.141gb
-# Check available profiles on your cluster:
-#   oc get resourceslices -o json | \
-#     jq -r '[.items[] | select(.spec.driver=="gpu.nvidia.com") | .spec.devices[]?
-#             | select(.attributes.type.string=="mig") | .attributes.profile.string] | unique[]'
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
   name: mig-claim-profile
-  namespace: dynamic-mig-jobs
+  namespace: dynamic-mig-samples
 spec:
   spec:
     devices:
@@ -43,13 +36,14 @@ spec:
           deviceClassName: mig.nvidia.com
           selectors:
           - cel:
-              expression: "device.attributes['gpu.nvidia.com'].profile == '1g.10gb'"
+              # Adjust profile for your GPU model (H100 SXM: 1g.10gb, H200 SXM: 1g.18gb)
+              expression: "device.attributes['gpu.nvidia.com'].profile == '1g.18gb'"
 ---
 apiVersion: v1
 kind: Pod
 metadata:
   name: mig-profile
-  namespace: dynamic-mig-jobs
+  namespace: dynamic-mig-samples
 spec:
   restartPolicy: Never
   serviceAccountName: mig-test-service-account

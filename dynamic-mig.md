@@ -84,7 +84,7 @@ oc apply -f dynamic-mig-samples/case1-any-mig.yaml
 Once scheduled, the DRA driver automatically enables MIG mode on the GPU and creates the requested slice. Once the pod completes, inspect the logs to confirm the MIG device was visible:
 
 ```bash
-oc logs -n dynamic-mig-jobs mig-any
+oc logs -n dynamic-mig-samples mig-any
 ```
 
 After deleting the workload, the DRA driver tears down the MIG slice:
