@@ -22,4 +22,5 @@ helm install nvidia-dra-driver-gpu nvidia/nvidia-dra-driver-gpu \
     --create-namespace \
     --namespace nvidia-dra-driver-gpu \
     --set nvidiaDriverRoot=/run/nvidia/driver \
+    --set featureGates.DynamicMIG="${DYNAMIC_MIG:-false}" \
     ${FORCE_GPU_SUPPORT_OPTIONS}

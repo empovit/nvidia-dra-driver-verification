@@ -34,6 +34,7 @@ helm install nvidia-dra-driver-gpu ${DRA_DRIVER_DIR}/deployments/helm/nvidia-dra
     --create-namespace \
     --namespace nvidia-dra-driver-gpu \
     --set nvidiaDriverRoot=/run/nvidia/driver \
+    --set featureGates.DynamicMIG="${DYNAMIC_MIG:-false}" \
     ${FORCE_GPU_SUPPORT_OPTIONS} \
     --set image.tag=${TAG} \
     --set image.repository=${REGISTRY}/${IMAGE}
