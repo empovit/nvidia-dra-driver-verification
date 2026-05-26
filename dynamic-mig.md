@@ -74,6 +74,7 @@ The [`dynamic-mig-samples/`](dynamic-mig-samples/) directory contains sample wor
 | `case3-exact-profile.yaml` | Exact profile name (e.g. `1g.10gb`) |
 | `case4-multiple-slices.yaml` | Multiple slices in one pod, each assigned to a different container |
 | `case5-same-gpu.yaml` | Multiple slices pinned to the same parent GPU |
+| `case6-gpu-burn.yaml` | GPU burn test — verifies the MIG slice is actually usable under load |
 
 Apply a workload, for example:
 
