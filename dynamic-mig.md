@@ -81,10 +81,48 @@ Apply a workload, for example:
 oc apply -f dynamic-mig-samples/case1-any-mig.yaml
 ```
 
-Once scheduled, the DRA driver automatically enables MIG mode on the GPU and creates the requested slice. Once the pod completes, inspect the logs to confirm the MIG device was visible:
+Once scheduled, the DRA driver automatically enables MIG mode on the GPU and creates the requested slice.
+
+While the pod is running, verify that the MIG slice was allocated. List ResourceClaims in the namespace:
 
 ```bash
-oc logs -n dynamic-mig-samples mig-any
+oc get resourceclaims -n dynamic-mig-samples
+```
+
+Inspect the allocation details of all claims in the namespace:
+
+```bash
+oc get resourceclaims -n dynamic-mig-samples -o json | jq '.items[] | {claim: .metadata.name, allocation: .status.allocation}'
+```
+
+List all allocated MIG claims across namespaces:
+
+```bash
+oc get resourceclaims -A -o json | \
+  jq -r '
+    .items[]
+    | select(.status.allocation != null)
+    | select(.status.allocation.devices.results[]?.device | strings | startswith("gpu-") and contains("mig"))
+    | [.metadata.namespace, .metadata.name,
+       (.status.reservedFor[]? | .name),
+       (.status.allocation.devices.results[]?.device)]
+    | @tsv' | column -t -s $'\t' \
+  | { echo -e "NAMESPACE\tCLAIM\tPOD\tDEVICE"; cat; }
+```
+
+Inspect the pod logs to confirm the MIG device(s) were visible (use `--all-containers` for multi-container pods):
+
+```bash
+oc logs -n dynamic-mig-samples <pod-name> --all-containers
+```
+
+Expected output (example from case4 on H200):
+
+```
+GPU 0: NVIDIA H200 (UUID: GPU-cf2e642c-2bff-e1de-7e84-8e5c619156f2)
+  MIG 1g.18gb     Device  0: (UUID: MIG-92a927f2-1991-5603-9235-bbef80704db2)
+GPU 0: NVIDIA H200 (UUID: GPU-cf2e642c-2bff-e1de-7e84-8e5c619156f2)
+  MIG 2g.35gb     Device  0: (UUID: MIG-b5d69c6a-42b8-5460-ad57-0118e0d84c38)
 ```
 
 After deleting the workload, the DRA driver tears down the MIG slice:
