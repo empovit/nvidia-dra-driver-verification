@@ -56,6 +56,26 @@ export BUNDLE_IMAGE="ghcr.io/nvidia/gpu-operator/gpu-operator-bundle:main-latest
 
 **Note:** The `BUNDLE_IMAGE` environment variable is required for bundle installation.
 
+#### Important: GPU Operator Upgrade Compatibility with DRA
+
+When using DRA for GPU allocation (including dynamic MIG), there is a [known issue](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/dra-intro-install.html#known-issues) where the NVIDIA Driver Manager will not correctly evict the DRA driver kubelet plugin during GPU Operator driver upgrades. Without the configuration below, a GPU Operator upgrade will cause the driver daemonset pod to crash because the DRA driver holds the GPU, even when no workloads are running.
+
+To avoid this, perform the following steps after installing the GPU Operator:
+
+1. Label the GPU nodes that will use DRA GPU allocation:
+
+   ```bash
+   oc label node <gpu-node> nvidia.com/dra-kubelet-plugin=true
+   ```
+
+2. Configure the GPU Operator's `ClusterPolicy` to evict the DRA kubelet plugin during driver upgrades:
+
+   ```bash
+   oc patch clusterpolicy gpu-cluster-policy --type=merge -p '{
+     "spec": {"driver": {"manager": {"env": [{"name": "NODE_LABEL_FOR_GPU_POD_EVICTION", "value": "nvidia.com/dra-kubelet-plugin"}]}}}
+   }'
+   ```
+
 ### 2. Install the NVIDIA DRA Driver
 
 Choose **one** of the following installation methods:
